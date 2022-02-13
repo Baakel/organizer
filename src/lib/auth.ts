@@ -1,5 +1,5 @@
-import { getAuth, signInWithRedirect, signOut as _signOut, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import type { User } from "firebase/auth";
+/* import { getAuth, signInWithRedirect, signOut as _signOut, signInWithPopup, GoogleAuthProvider, getRedirectResult, setPersistence, browserLocalPersistence } from "firebase/auth";
+import type { UserCredential } from "firebase/auth";
 import { app } from "$lib/firebase";
 
 const createAuth = () => {
@@ -12,8 +12,10 @@ const createAuth = () => {
 
     async function signInWith(name: string) {
         const auth = getAuth(app)
+        await setPersistence(auth, browserLocalPersistence)
         const provider = providerFor(name)
-        await signInWithRedirect(auth, provider)
+        const creds = await signInWithPopup(auth, provider)
+        return creds
     }
 
     async function signOut() {
@@ -27,4 +29,7 @@ const createAuth = () => {
     }
 }
 
-export const auth = createAuth()
+export const auth = createAuth() */
+
+// Not needed anymore, keeping it for reference
+export {}
