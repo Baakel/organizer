@@ -8,6 +8,9 @@
     const dispatch = createEventDispatcher();
     
     export const setGoal = async () => {
+        if (value === "") {
+            return
+        }
         const goalsCollection = collection(db, "users", auth.currentUser.uid, "goals")
         await addDoc(goalsCollection, {
             text: value,
