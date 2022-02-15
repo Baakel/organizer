@@ -16,10 +16,7 @@ export async function doLogin() {
         email: auth.currentUser.email,
         pic: auth.currentUser.photoURL,
         sub: false,
-    }, { merge: true })
-
-    console.log(document)
-    
+    }, { merge: true })    
 
     /* const result2 = await getRedirectResult(auth)
     console.log(result2, "result 2")
