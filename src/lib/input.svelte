@@ -22,6 +22,8 @@
 </script>
 
 <form on:submit|preventDefault={setGoal}>
-    <input type="text" placeholder={placeholder} class="w-2/3 rounded-full p-2 bg-gray-600 text-white" bind:value>
+    <div class="bg-neutral-900 shadow-sunk mb-4 rounded-full text-center mx-10">
+        <input type="text" placeholder={placeholder} class="w-full rounded-full p-2 bg-neutral-900 text-gray-300 text-center" bind:value>
+    </div>
 </form>
 

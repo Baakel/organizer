@@ -9,4 +9,5 @@ export interface Task {
     created: string,
     past: boolean,
     completed: boolean,
+    id: string,
 }

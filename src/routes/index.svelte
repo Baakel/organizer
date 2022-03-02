@@ -2,12 +2,13 @@
     //import { browser } from "$app/env";
     import Input from "$lib/input.svelte";
     import ImportantTask from "$lib/ImportantTask.svelte";
+    import ImpTaskList from "$lib/ImpTaskList.svelte";
     import {doLogin, doLogout} from "$lib/login"
-    import { user } from "$lib/stores";
+    import { user, maydos } from "$lib/stores";
     import { collection, doc, getDocs, getDoc, query, where, updateDoc } from "firebase/firestore"
     import { db } from "$lib/firebase"
     import { getAuth } from "firebase/auth"
-    import { isToday } from "$lib/_utils";
+    import { getMayDos, isToday } from "$lib/_utils";
     import Card from "$lib/card.svelte";
     import { getGoals, getImportantTasks } from "$lib/_utils";
 
@@ -16,10 +17,12 @@
 
     let goals = getGoals(localAuth);
     let importantTasks = getImportantTasks(localAuth);
+    getMayDos(localAuth, db);
     $: {
         if ($user) {
             goals = getGoals(localAuth);
             importantTasks = getImportantTasks(localAuth)
+            // getMayDos(localAuth, db)
         }
     }
 
@@ -68,9 +71,7 @@
                                 Getting your importantTasks...
                             </p>
                         {:then impTasksArray}
-                            {#each impTasksArray as impTask}
-                                <p>{impTask.text}</p>
-                            {/each}
+                            <ImpTaskList tasks={impTasksArray} />
                         {/await}
                     {/if}
                     {#if $user}
@@ -89,7 +90,12 @@
                     May-dos
                 </span>
                 <div slot="content" class="py-6">
-                    <Input placeholder=" Add an easy task" />
+                    {#if $user}
+                        <Input placeholder=" Add an easy task" />
+                        {#each $maydos as maydo}
+                            <div>{maydo.text} is {maydo.completed}</div>
+                        {/each}
+                    {/if}
                 </div>
             </Card>
         </div>

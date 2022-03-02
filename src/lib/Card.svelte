@@ -2,7 +2,7 @@
     
 </script>
 
-<div class="my-4 bg-neutral-800 rounded-2xl shadow-[1px_1px_2px_0_rgb(17,19,30),-1px_-1px_2px_0_rgb(63,63,70)]">
+<div class="my-4 bg-neutral-800 rounded-2xl shadow-raised">
     <h1 class="text-gray-300 text-xl font-extrabold py-4">
         <slot name="title"></slot>
     </h1>

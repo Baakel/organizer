@@ -1,6 +1,8 @@
 import type { Goal, Task } from "$lib/types";
-import { collection, doc, getDocs, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
+import { collection, doc, Firestore, getDocs, onSnapshot, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { db } from "$lib/firebase";
+import type { Auth, Unsubscribe } from "firebase/auth";
+import { maydos, user } from "$lib/stores";
 
 export function getUserFromStorage() {
     const userKey = Object.keys(window.localStorage)
@@ -70,6 +72,7 @@ export const getImportantTasks = async (localAuth): Promise<Task[]> => {
             created: "",
             past: true,
             completed: false,
+            id: "",
         }
         // const dateCreated = new Date(docu.get("created").seconds * 1000)
         // const currentDate = new Date()
@@ -82,7 +85,32 @@ export const getImportantTasks = async (localAuth): Promise<Task[]> => {
         task.created = docu.get("created")
         task.past = docu.get("past")
         task.completed = docu.get("completed")
+        task.id = docu.id
         taskArray.push(task)
     })
     return taskArray
+}
+
+export async function getMayDos(localAuth: Auth, db: Firestore): Promise<Unsubscribe> {
+    if (!localAuth.currentUser) {
+        return;
+    }
+    const unsub = onSnapshot(query(collection(db, "users", localAuth.currentUser.uid, "important_tasks")), (querySnapshot) => {
+        let tasks = []
+        querySnapshot.forEach((doc) => {
+            tasks.push(doc.data())
+        })
+        maydos.set(tasks)
+    })
+    user.subscribe(value => {
+        if (!value) {
+            unsub();
+        }
+    })
+
+    return unsub
+}
+
+export async function getMayDosWithStore(localAuth: Auth, db: Firestore): Promise<void> {
+    const unsub = onSnapshot(query(collection(db, "users", localAuth.currentUser.uid, "important_tasks")), maydos.subscribe((querySnapshot) => {console.log("logging from store", querySnapshot)}))
 }
