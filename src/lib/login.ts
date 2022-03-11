@@ -1,6 +1,13 @@
 //import { auth } from "$lib/auth"
-import { auth, db } from "$lib/firebase";
-import { getRedirectResult, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from "firebase/auth";
+import { auth, db, setPers } from "$lib/firebase";
+import {
+    browserLocalPersistence,
+    getRedirectResult,
+    GoogleAuthProvider,
+    setPersistence,
+    signInWithPopup,
+    signInWithRedirect
+} from "firebase/auth";
 import { user } from "$lib/stores"
 import { getDoc, collection, doc, addDoc, setDoc } from "firebase/firestore";
 

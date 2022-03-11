@@ -6,13 +6,21 @@
     import {doLogin, doLogout} from "$lib/login"
     import { user, maydos } from "$lib/stores";
     import { collection, doc, getDocs, getDoc, query, where, updateDoc } from "firebase/firestore"
-    import { db } from "$lib/firebase"
-    import { getAuth } from "firebase/auth"
+    import { db, auth } from "$lib/firebase"
+    import {browserLocalPersistence, getAuth, setPersistence} from "firebase/auth"
     import { getMayDos, isToday } from "$lib/_utils";
-    import Card from "$lib/card.svelte";
+    import Card from "$lib/Card.svelte";
     import { getGoals, getImportantTasks } from "$lib/_utils";
+    import { onMount } from 'svelte';
 
-    const localAuth = getAuth()
+    onMount(async () => {
+      await setPersistence(auth, browserLocalPersistence)
+      auth.onAuthStateChanged(userObs => {
+        user.set(userObs)
+      })
+    })
+
+    const localAuth = auth;
     user.set(localAuth.currentUser)
 
     let goals = getGoals(localAuth);
