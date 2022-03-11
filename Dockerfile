@@ -12,7 +12,7 @@ WORKDIR /app/
 
 RUN npm run build
 
-EXPOSE 3000
+EXPOSE 3300
 
 ENV HOST=0.0.0.0
 CMD ["node", "build"]
