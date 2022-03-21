@@ -1,6 +1,6 @@
 <script lang="ts">
     //import { browser } from "$app/env";
-    import Input from "$lib/input.svelte";
+    import Input from "$lib/Input.svelte";
     import ImportantTask from "$lib/ImportantTask.svelte";
     import ImpTaskList from "$lib/ImpTaskList.svelte";
     import {doLogin, doLogout} from "$lib/login"
@@ -12,6 +12,8 @@
     import Card from "$lib/Card.svelte";
     import { getGoals, getImportantTasks } from "$lib/_utils";
     import { onMount } from 'svelte';
+    import MaydosList from "$lib/MaydosList.svelte";
+    import Pixels from "$lib/Pixels.svelte";
 
     onMount(async () => {
       await setPersistence(auth, browserLocalPersistence)
@@ -30,7 +32,7 @@
         if ($user) {
             goals = getGoals(localAuth);
             importantTasks = getImportantTasks(localAuth)
-            // getMayDos(localAuth, db)
+            getMayDos(localAuth, db)
         }
     }
 
@@ -65,8 +67,8 @@
             {/await}
         </div>
     </Card>
-    <div class="grid gap-x-4 grid-cols-6">
-        <div class="col-span-3">
+    <div class="grid gap-x-4 grid-cols-1 md:grid-cols-6">
+        <div class="md:col-span-3">
             <Card>
                 <span slot="title">
                     Important Todos
@@ -92,7 +94,7 @@
                 </div>
             </Card>
         </div>
-        <div class="col-span-2">
+        <div class="text-gray-300 md:col-span-2">
             <Card>
                 <span slot="title">
                     May-dos
@@ -100,18 +102,19 @@
                 <div slot="content" class="py-6">
                     {#if $user}
                         <Input placeholder=" Add an easy task" />
-                        {#each $maydos as maydo}
-                            <div>{maydo.text} is {maydo.completed}</div>
-                        {/each}
+                        <MaydosList tasks={$maydos} />
                     {/if}
                 </div>
             </Card>
         </div>
-        <div class="col-span-1">
+        <div class="md:col-span-1">
             <Card>
                 <span slot="title">
                     Year in pixels
                 </span>
+                <div slot="content" class="py-6">
+                    <Pixels />
+                </div>
             </Card>
         </div>
     </div>
