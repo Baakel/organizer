@@ -4,7 +4,7 @@
     import ImportantTask from "$lib/ImportantTask.svelte";
     import ImpTaskList from "$lib/ImpTaskList.svelte";
     import {doLogin, doLogout} from "$lib/login"
-    import { user, maydos } from "$lib/stores";
+    import { user, maydos, importantTasks } from "$lib/stores";
     import { collection, doc, getDocs, getDoc, query, where, updateDoc } from "firebase/firestore"
     import { db, auth } from "$lib/firebase"
     import {browserLocalPersistence, getAuth, setPersistence} from "firebase/auth"
@@ -14,6 +14,7 @@
     import { onMount } from 'svelte';
     import MaydosList from "$lib/MaydosList.svelte";
     import Pixels from "$lib/Pixels.svelte";
+    import Maydos from "$lib/Maydos.svelte"
 
     onMount(async () => {
       await setPersistence(auth, browserLocalPersistence)
@@ -25,23 +26,21 @@
     const localAuth = auth;
     user.set(localAuth.currentUser)
 
+    $: console.log($maydos)
+
     let goals = getGoals(localAuth);
-    let importantTasks = getImportantTasks(localAuth);
+    getImportantTasks(localAuth, db);
     getMayDos(localAuth, db);
     $: {
         if ($user) {
             goals = getGoals(localAuth);
-            importantTasks = getImportantTasks(localAuth)
+            getImportantTasks(localAuth, db)
             getMayDos(localAuth, db)
         }
     }
 
     function handleNewGoal() {
         goals = getGoals(localAuth)
-    }
-
-    function handleNewImpTask() {
-        importantTasks = getImportantTasks(localAuth)
     }
 
 </script>
@@ -75,13 +74,13 @@
                 </span>
                 <div slot="content" class="p-6 text-gray-300">
                     {#if $user}
-                        <ImportantTask placeholder=" Add a new task" on:createdImpTask={handleNewImpTask} />
-                        {#await importantTasks}
+                        <ImportantTask placeholder=" Add a new task" />
+                        {#await $importantTasks}
                             <p class="text-lg">
                                 Getting your importantTasks...
                             </p>
-                        {:then impTasksArray}
-                            <ImpTaskList tasks={impTasksArray} />
+                        {:then}
+                            <ImpTaskList tasks={$importantTasks} />
                         {/await}
                     {/if}
                     {#if $user}
@@ -101,7 +100,7 @@
                 </span>
                 <div slot="content" class="py-6">
                     {#if $user}
-                        <Input placeholder=" Add an easy task" />
+                        <Maydos placeholder=" Add an easy task" />
                         <MaydosList tasks={$maydos} />
                     {/if}
                 </div>

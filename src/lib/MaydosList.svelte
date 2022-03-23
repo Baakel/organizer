@@ -1,15 +1,19 @@
 <script>
     export let tasks;
     import { db, auth } from "$lib/firebase";
-    import { collection, updateDoc, doc } from "firebase/firestore";
+    import { collection, updateDoc, doc, deleteDoc } from "firebase/firestore";
+    import { getMayDos } from "$lib/_utils";
 
     const handleComplete = async (task) => {
         let taskCollection = collection(db, 'users', auth.currentUser.uid, "maydos")
         await updateDoc(doc(taskCollection, task.id), {completed: !task.completed})
         task.completed = !task.completed
-        let index = tasks.indexOf(task)
-        tasks.splice(index, 1)
-        tasks = [...tasks, task]
+    }
+
+    const handleDelete = async (task) => {
+        let taskCollection = collection(db, "users", auth.currentUser.uid, "maydos")
+        await deleteDoc(doc(taskCollection, task.id))
+        await getMayDos(auth, db)
     }
 </script>
 
@@ -23,7 +27,8 @@
                     {task.text}
                 </div>
                 <div
-                class="cursor-pointer">
+                class="cursor-pointer"
+                on:click={() => handleDelete(task)}>
                     🗑
                 </div>
             </div>
@@ -34,7 +39,8 @@
                     {task.text}
                 </div>
                 <div
-                class="cursor-pointer font-normal">
+                class="cursor-pointer font-normal"
+                on:click={() => handleDelete(task)}>
                     🗑
                 </div>
             </div>

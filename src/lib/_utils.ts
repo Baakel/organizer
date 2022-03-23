@@ -2,7 +2,7 @@ import type { Goal, Task } from "$lib/types";
 import { collection, doc, Firestore, getDocs, onSnapshot, query, serverTimestamp, updateDoc, where } from "firebase/firestore";
 import { db } from "$lib/firebase";
 import type { Auth, Unsubscribe } from "firebase/auth";
-import { maydos, user } from "$lib/stores";
+import { maydos, user, importantTasks } from "$lib/stores";
 
 export function getUserFromStorage() {
     const userKey = Object.keys(window.localStorage)
@@ -57,48 +57,33 @@ export const getGoals = async (localAuth): Promise<Goal> => {
     return goal
 }
 
-export const getImportantTasks = async (localAuth): Promise<Task[]> => {
+export async function getImportantTasks(localAuth: Auth, db: Firestore): Promise<Unsubscribe> {
     if (!localAuth.currentUser) {
-        return []
+        return
     } 
-    const impTasksCollection = collection(db, "users", localAuth.currentUser.uid, "important_tasks")
-    const q = query(impTasksCollection)
-    const querySnapshot = await getDocs(q)
-    // const updated = async (docu) => await updateDoc(doc(impTasksCollection, docu.id), {past: true})
-    const taskArray = [] 
-    querySnapshot.forEach((docu) => {
-        let task: Task = {
-            text: "",
-            created: "",
-            past: true,
-            completed: false,
-            id: "",
-        }
-        // const dateCreated = new Date(docu.get("created").seconds * 1000)
-        // const currentDate = new Date()
-        /* if (!isToday(dateCreated, currentDate)){
-            created = dateCreated.toLocaleString()
-            updated(docu)
-            return task
-        } */
-        task.text = docu.get("text")
-        task.created = docu.get("created")
-        task.past = docu.get("past")
-        task.completed = docu.get("completed")
-        task.id = docu.id
-        taskArray.push(task)
+    const unsub = onSnapshot(query(collection(db, "users", localAuth.currentUser.uid, "important_tasks")), (querySnapshot) => {
+        let tasks = []
+        querySnapshot.forEach((doc) => {
+            tasks.push({...doc.data(), "id": doc.id})
+        })
+        importantTasks.set(tasks)
     })
-    return taskArray
+    user.subscribe(value => {
+        if(!value) {
+            unsub();
+        }
+    })
+    return unsub
 }
 
 export async function getMayDos(localAuth: Auth, db: Firestore): Promise<Unsubscribe> {
     if (!localAuth.currentUser) {
         return;
     }
-    const unsub = onSnapshot(query(collection(db, "users", localAuth.currentUser.uid, "important_tasks")), (querySnapshot) => {
+    const unsub = onSnapshot(query(collection(db, "users", localAuth.currentUser.uid, "maydos")), (querySnapshot) => {
         let tasks = []
         querySnapshot.forEach((doc) => {
-            tasks.push(doc.data())
+            tasks.push({...doc.data(), "id": doc.id})
         })
         maydos.set(tasks)
     })
@@ -111,6 +96,6 @@ export async function getMayDos(localAuth: Auth, db: Firestore): Promise<Unsubsc
     return unsub
 }
 
-export async function getMayDosWithStore(localAuth: Auth, db: Firestore): Promise<void> {
-    const unsub = onSnapshot(query(collection(db, "users", localAuth.currentUser.uid, "important_tasks")), maydos.subscribe((querySnapshot) => {console.log("logging from store", querySnapshot)}))
-}
+// export async function getMayDosWithStore(localAuth: Auth, db: Firestore): Promise<void> {
+//     const unsub = onSnapshot(query(collection(db, "users", localAuth.currentUser.uid, "important_tasks")), maydos.subscribe((querySnapshot) => {console.log("logging from store", querySnapshot)}))
+// }
