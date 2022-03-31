@@ -1,5 +1,8 @@
-import { writable } from "svelte/store";
+import {writable} from "svelte/store";
+import type {User} from "firebase/auth";
+import type {Writable} from "svelte/store";
 
-export let user = writable(null);
-export let maydos = writable([]);
-export let importantTasks = writable([]);
+
+export const user: Writable<null | User>  = writable(null);
+export const maydos = writable([]);
+export const importantTasks = writable([]);
