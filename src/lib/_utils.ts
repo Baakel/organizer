@@ -54,6 +54,7 @@ export const getGoals = async (localAuth): Promise<Goal> => {
 }
 
 export async function getImportantTasks(localAuth: Auth, db: Firestore): Promise<Unsubscribe> {
+    console.log("this was called")
     if (!localAuth.currentUser) {
         return
     } 
