@@ -19,7 +19,6 @@
             completed: false,
             created: serverTimestamp(),
         })
-        await getImportantTasks(auth, db)
         value = "";
         inputNode.blur()
 

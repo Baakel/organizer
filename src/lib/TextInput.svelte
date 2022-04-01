@@ -1,6 +1,6 @@
 <script lang="ts">
     export let placeholder: string;
-    export let value: any;
+    export let value = "";
     export let element = undefined;
 </script>
 

@@ -19,7 +19,6 @@
             completed: false,
             created: serverTimestamp(),
         })
-        await getMayDos(auth, db);
         value = "";
         inputNode.blur()
 

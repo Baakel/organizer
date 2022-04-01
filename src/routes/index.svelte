@@ -26,8 +26,6 @@
     const localAuth = auth;
     user.set(localAuth.currentUser)
 
-    $: console.log($maydos)
-
     let goals = getGoals(localAuth);
     getImportantTasks(localAuth, db);
     getMayDos(localAuth, db);

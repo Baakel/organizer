@@ -13,7 +13,6 @@
     const handleDelete = async (task) => {
         let taskCollection = collection(db, "users", auth.currentUser.uid, "important_tasks")
         await deleteDoc(doc(taskCollection, task.id))
-        await getImportantTasks
     }
 </script>
 
