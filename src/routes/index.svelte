@@ -8,9 +8,8 @@
     import { collection, doc, getDocs, getDoc, query, where, updateDoc } from "firebase/firestore"
     import { db, auth } from "$lib/firebase"
     import {browserLocalPersistence, getAuth, setPersistence} from "firebase/auth"
-    import { getMayDos, isToday } from "$lib/_utils";
     import Card from "$lib/Card.svelte";
-    import { getGoals, getImportantTasks } from "$lib/_utils";
+    import { getGoals, getImportantTasks, getColors, getMayDos } from "$lib/_utils";
     import { onMount } from 'svelte';
     import MaydosList from "$lib/MaydosList.svelte";
     import Pixels from "$lib/Pixels.svelte";
@@ -29,11 +28,13 @@
     let goals = getGoals(localAuth);
     getImportantTasks(localAuth, db);
     getMayDos(localAuth, db);
+    getColors(localAuth, db);
     $: {
         if ($user) {
             goals = getGoals(localAuth);
             getImportantTasks(localAuth, db)
             getMayDos(localAuth, db)
+            getColors(localAuth, db);
         }
     }
 
@@ -110,7 +111,9 @@
                     Year in pixels
                 </span>
                 <div slot="content" class="py-6">
-                    <Pixels />
+                    {#if $user}
+                        <Pixels />
+                    {/if}
                 </div>
             </Card>
         </div>

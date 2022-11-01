@@ -6,3 +6,4 @@ import type {Writable} from "svelte/store";
 export const user: Writable<null | User>  = writable(null);
 export const maydos = writable([]);
 export const importantTasks = writable([]);
+export const pixelColors = writable([]);

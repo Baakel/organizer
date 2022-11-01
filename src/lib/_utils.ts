@@ -2,7 +2,7 @@ import type {Goal} from "$lib/types";
 import {collection, doc, Firestore, getDocs, onSnapshot, query, updateDoc, where} from "firebase/firestore";
 import {db} from "$lib/firebase";
 import type {Auth, Unsubscribe} from "firebase/auth";
-import {importantTasks, maydos, user} from "$lib/stores";
+import {importantTasks, maydos, pixelColors, user} from "$lib/stores";
 
 export function getUserFromStorage() {
     const userKey = Object.keys(window.localStorage)
@@ -54,7 +54,6 @@ export const getGoals = async (localAuth): Promise<Goal> => {
 }
 
 export async function getImportantTasks(localAuth: Auth, db: Firestore): Promise<Unsubscribe> {
-    console.log("this was called")
     if (!localAuth.currentUser) {
         return
     } 
@@ -83,6 +82,27 @@ export async function getMayDos(localAuth: Auth, db: Firestore): Promise<Unsubsc
             tasks.push({...doc.data(), "id": doc.id})
         })
         maydos.set(tasks)
+    })
+    user.subscribe(value => {
+        if (!value) {
+            unsub();
+        }
+    })
+
+    return unsub
+}
+
+export async function getColors(localAuth: Auth, db: Firestore): Promise<Unsubscribe> {
+    if (!localAuth.currentUser) {
+        return;
+    }
+    const unsub = onSnapshot(query(collection(db, "users", localAuth.currentUser.uid, "colors")), (querySnapshot) => {
+        const colors = []
+        querySnapshot.forEach((doc) => {
+            colors.push({...doc.data(), "id": doc.id})
+            console.log("colors are", colors)
+        })
+        pixelColors.set(colors)
     })
     user.subscribe(value => {
         if (!value) {
